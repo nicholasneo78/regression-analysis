@@ -58,3 +58,5 @@ anova(mlr2,mlr)
 mlr3 <- lm(y ~ offset(0.7*x1)+x2+x3, data=steam)
 summary(mlr3)
 anova(mlr3,mlr)
+
+## 6.2 Prediction
