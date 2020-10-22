@@ -60,3 +60,16 @@ summary(mlr3)
 anova(mlr3,mlr)
 
 ## 6.2 Prediction
+# prediction
+con <- c(1,0.7,0.5,0.3)
+lhat <- sum(con*coef(mlr))
+lhat
+t05 <-qt(0.975,21)
+bm <- t05*mlrs$sigma*sqrt(con%*%mlrs$cov.unscaled%*%con)
+c(lhat-bm,lhat+bm)
+c3 <- 1
+bm <- t05*mlrs$sigma*sqrt(con%*%mlrs$cov.unscaled%*%con+c3)
+c(lhat-bm,lhat+bm)
+con <- data.frame(x1=0.7,x2=0.5,x3=0.3)
+predict(mlr,con,interval='confidence',level=0.95)
+predict(mlr,con,interval='prediction',level=0.95)
