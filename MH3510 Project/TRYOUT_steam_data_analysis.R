@@ -1,5 +1,5 @@
 # graphical display of the observed data
-steam_raw <- read.table("Steam.datt", header=FALSE)
+steam_raw <- read.table("Steam.dat", header=FALSE)
 steam <- data.frame(y=steam_raw$V2, x1=steam_raw$V3, x2=steam_raw$V4, x3=steam_raw$V9)
 steam
 plot(steam)
