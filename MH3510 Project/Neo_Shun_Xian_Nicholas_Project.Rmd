@@ -57,10 +57,10 @@ head(data,5)
 pairs(data,panel=panel.smooth)
 ```
   
-From the plot above, there seemed to have relations between each predictor variables (X1 to X4) and the response variable (y). 
+From the plot above, there exist relations between each predictor variables (X1 to X4) and the response variable (y). 
 
-## Model 1: Additional e^x~2~^ term in the Multi Regression Model
-From the plot above, there seemed to have an exponential relation between the response variable y and predictor variable e^x~2~^. Hence, we can try to fit the data with an additional e^x~2~^ term: $$y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\beta_{3}X_{3}+\beta_{4}X_{4}+\beta_{5}e^{X_{2}}$$
+### Model 1: Additional e^x~2~^ term in the Multi Regression Model
+From the plot above, there seemed to have an exponential relation between the response variable y and predictor variable x~2~. Hence, we can try to fit the data with an additional e^x~2~^ term: $$y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\beta_{3}X_{3}+\beta_{4}X_{4}+\beta_{5}e^{X_{2}}$$
 
 ### Fit Model 1
 ```{r fit1}
