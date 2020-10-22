@@ -9,22 +9,62 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+### Background
+This data is about traffic monitoring. One of the most important traffic monitoring variables is the average annual daily traffic (aadt) for a section of road or highway. It is defined as the average, over a year, of the the number of vehicles that pass through a particular section of a road each day.  
+  
+  
+**Response Variable:**   
+y: Average annual daily traffic 
+  
+**Predictor Variable:**  
+X1: Population of country in which road section is located  
+X2: Number of lanes in road section   
+X3: Width of the road section (in feet)  
+X4: Two-category quality variable indicating whether or not there is control of access to road section (1=access control, 2=no access control)  
+**Can define X4 to be 1 if there is access control and 0 if no control**  
+  
+*Numerical predictor variable:* X1, X2, X3    
+*Categorical predictor varable:* X4  
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+## Importing the dataset
+```{r readData}
+# read the dataset
+data_raw = read.table("aadt.txt",header=FALSE)
+# check data by showing the first few entries of data
+head(data_raw,5)
 ```
 
-## Including Plots
+## Preprocess raw data
+```{r preprocess_data}
+# select only the columns with the predictor and response variable
+data = data.frame(y=data_raw$V1,
+                  x1=data_raw$V2,
+                  x2=data_raw$V3,
+                  x3=data_raw$V4,
+                  x4=data_raw$V5)
 
-You can also embed plots, for example:
+#defining X4 to be 1 if there is access control and 0 if there isn't
+data$x4[data$x4==1] <- 0
+data$x4[data$x4==2] <- 1
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+# take a look at the modification to the data
+head(data,5)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Scatter Plot Matrix
+```{r scatterPlot}
+# plot the scatter plot matrix
+pairs(data,panel=panel.smooth)
+```
+  
+From the plot above, there seemed to have relations between each predictor variables (X1 to X4) and the response variable (y). 
+
+## Model 1: Additional e^x~2~^ term in the Multi Regression Model
+From the plot above, there seemed to have an exponential relation between the response variable y and predictor variable e^x~2~^. Hence, we can try to fit the data with an additional e^x~2~^ term: $$y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\beta_{3}X_{3}+\beta_{4}X_{4}+\beta_{5}e^{X_{2}}$$
+
+### Fit Model 1
+```{r fit1}
+# fit a multiple linear regression model
+mlr1 <- lm(y ~ x1+x2+x3+x4+I(exp(x2)), data=data)
+summary(mlr1)
+```
