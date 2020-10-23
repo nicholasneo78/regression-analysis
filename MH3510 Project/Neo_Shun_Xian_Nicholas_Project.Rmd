@@ -1,8 +1,10 @@
 ---
 title: "MH3510 Project Report"
 author: "Neo Shun Xian Nicholas"
-date: "22 October 2020"
-output: html_document
+date: "25 October 2020"
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -59,7 +61,7 @@ pairs(data,panel=panel.smooth)
   
 From the plot above, there exist relations between each predictor variables (X1 to X4) and the response variable (y). 
 
-### Model 1: Additional e^x~2~^ term in the Multi Regression Model
+### Model: Additional e^x~2~^ term in the Multi Regression Model
 From the plot above, there seemed to have an exponential relation between the response variable y and predictor variable x~2~. Hence, we fit the data with an additional e^x~2~^ term: $$y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\beta_{3}X_{3}+\beta_{4}X_{4}+\beta_{5}e^{X_{2}}+\epsilon$$
 
 This will be our suggested model 1.
@@ -80,5 +82,82 @@ mlr1_alt <- lm(y ~ x1+x2+x4+I(exp(x2)), data=data)
 # ANOVA
 anova(mlr1_alt,mlr1)
 ```
-From the above analysis, since the F-value is small, we cannot reject the null hypothesis, therefore, we remove the predictor variable X~3~ from further analysis
+From the above analysis, since the F-value is small, we cannot reject the null hypothesis at 0.1 level of significance, therefore, we eliminate the predictor variable X~3~ from further analysis
 
+### Check normality of residuals
+```{r model1_normality}
+# normality checking
+qqnorm(residuals(mlr1_alt), ylab='Residuals')
+qqline(residuals(mlr1_alt))
+```
+  
+From the QQ plot above, we can see that the residuals are not normally distributed. We will now draw some plots of the residuals against each predictor variable, X~1~, X~2~, X~4~  
+```{r model1_resPlot}
+par(mfrow=c(1,4))
+plot(fitted(mlr1_alt), residuals(mlr1_alt), ylab='Residuals', xlab='Fitted values')
+plot(data$x1, residuals(mlr1_alt), ylab='Residuals', xlab='X1')
+plot(data$x2, residuals(mlr1_alt), ylab='Residuals', xlab='X2')
+plot(data$x4, residuals(mlr1_alt), ylab='Residuals', xlab='X4')
+```
+  
+From the residuals against fitted values plot, we can observe that the variances of residuals have increased as the fitted values increases. From the residuals against X~1~ plot, there seemed to have a linear relationship between them. There isn't any obvious pattern seen from the plot of residuals against X~2~ and residuals against X~4~ plot. Therefore we can try to propose a model that includes the interaction between X~1~ and X~2~ as well as X~1~ and X~4~.
+  
+Hence, we fit the model:   $$y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\beta_{4}X_{4}+\beta_{5}e^{X_{2}}+\beta_{6}X_{1}X_{2}+\beta_{7}X_{1}X_{4}+\epsilon$$
+
+### Fit Model 2
+```{r fit2}
+# fit a multiple linear regression model
+mlr2 <- lm(y ~ x1+x2+x4+I(exp(x2))+I(x1*x2)+I(x1*x4), data=data)
+summary(mlr2)
+```
+### Check the adequacy using t-value (standard error) and F-test between 2 models
+From the result of model 2, the term X~4~ is not significant due to very small t-value. Hence, it's coefficient may be equal to zero **after including interaction terms X~1~X~2~ and X~1~X~4~** i.e $$H_{0}: \beta_{4} = 0$$
+
+```{r model2}
+# F-test between 2 models (full and model without predictor variable X4)
+mlr2_alt <- lm(y ~ x1+x2+I(exp(x2))+I(x1*x2)+I(x1*x4), data=data)
+# ANOVA
+anova(mlr2_alt,mlr2)
+```
+From the above analysis, since the F-value is small, we cannot reject the null hypothesis at 0.1 level of significance, therefore, we eliminate the predictor variable X~4~ from further analysis.
+
+### Check normality of residuals
+```{r model2_normality}
+# normality checking
+qqnorm(residuals(mlr2_alt), ylab='Residuals')
+qqline(residuals(mlr2_alt))
+```
+
+From the QQ plot above, we can see that the residuals are not normally distributed, but it seems to be closer to normality as compared to the alternative model, model 1. Hence we will declare the alternative model of model 2 as model 3, with X~4~ term removed, to do further analysis. i.e. 
+$$y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\beta_{5}e^{X_{2}}+\beta_{6}X_{1}X_{2}+\beta_{7}X_{1}X_{4}+\epsilon$$
+
+### Fit Model 3
+```{r fit3}
+# fit a multiple linear regression model
+mlr3 <- lm(y ~ x1+x2+I(exp(x2))+I(x1*x2)+I(x1*x4), data=data)
+summary(mlr3)
+```
+
+### Check the adequacy using t-value (standard error) and F-test between 2 models
+From the result of model 3, it seems like the model fits quite well with reasonably large t-values and also the fact that the R-squared and adjusted R-squared value 0.9229 and 0.9195 respectively, which are reasonably high values. We will still try to remove one term with the lowest t-value among the terms, X~1~X~2~ to see if the model is a better fit to the data. i.e we test our hypothesis: $$H_{0}: \beta_{6} = 0$$
+
+```{r model3}
+# F-test between 3 models (full and model without predictor variable X1X2)
+mlr3_alt <- lm(y ~ x1+x2+I(exp(x2))+I(x1*x4), data=data)
+# ANOVA
+anova(mlr3_alt,mlr3)
+```
+From the above analysis, since the F-value is large, we reject the null hypothesis at 0.1 level of significance, therefore, we **do not** eliminate the predictor variable X~1~X~2~ from further analysis.
+
+### Final Model
+After looking at the F-test, R-squared & adjusted R-squared as well as the significance of t-test, and also the comparison of the full and reduced model for model simplification, we proposed the following model to fit the data:  $$y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\beta_{5}e^{X_{2}}+\beta_{6}X_{1}X_{2}+\beta_{7}X_{1}X_{4}+\epsilon$$
+
+## Prediction
+Using x1=50000, x2=3, x3=60 and x4=2 to fit our final model.
+```{r prediction}
+pred_data = data.frame(x1=50000, x2=3, x4=2)
+# confidence interval of mean response
+predict(mlr3,pred_data,interval='confidence', level=0.95)
+# confidence interval of the predicted y value
+predict(mlr3,pred_data,interval='prediction', level=0.95)
+```
