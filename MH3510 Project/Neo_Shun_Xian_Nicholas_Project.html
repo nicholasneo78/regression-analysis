@@ -439,7 +439,7 @@ pairs(data,panel=panel.smooth)</code></pre>
 <p>From the plot above, there exist relations between each predictor variables (X1 to X4) and the response variable (y).</p>
 <div id="model-1-additional-ex2-term-in-the-multi-regression-model" class="section level3">
 <h3>Model 1: Additional e<sup>x<sub>2</sub></sup> term in the Multi Regression Model</h3>
-<p>From the plot above, there seemed to have an exponential relation between the response variable y and predictor variable x<sub>2</sub>. Hence, we fit the data with an additional e<sup>x<sub>2</sub></sup> term: <span class="math display">\[y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\beta_{3}X_{3}+\beta_{4}X_{4}+\beta_{5}e^{X_{2}}\]</span></p>
+<p>From the plot above, there seemed to have an exponential relation between the response variable y and predictor variable x<sub>2</sub>. Hence, we fit the data with an additional e<sup>x<sub>2</sub></sup> term: <span class="math display">\[y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\beta_{3}X_{3}+\beta_{4}X_{4}+\beta_{5}e^{X_{2}}+\epsilon\]</span></p>
 <p>This will be our suggested model 1.</p>
 </div>
 <div id="fit-model-1" class="section level3">
@@ -470,8 +470,21 @@ summary(mlr1)</code></pre>
 ## Multiple R-squared:  0.7805, Adjusted R-squared:  0.7709 
 ## F-statistic: 81.77 on 5 and 115 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
-<div id="check-the-adequacy-using-f-ratio-by-comparing-2-models" class="section level3">
-<h3>Check the adequacy using F-ratio by comparing 2 models</h3>
+<div id="check-the-adequacy-using-t-value-standard-error-and-f-test-between-2-models" class="section level3">
+<h3>Check the adequacy using t-value (standard error) and F-test between 2 models</h3>
+<p>From the result of model 1, predictor X<sub>3</sub> is not significant due to very small t-value. Hence, it’s coefficient may be equal to zero i.e <span class="math display">\[H_{0}: \beta_{3} = 0\]</span></p>
+<pre class="r"><code># F-test between 2 models (full and model without predictor variable X3)
+mlr1_alt &lt;- lm(y ~ x1+x2+x4+I(exp(x2)), data=data)
+# ANOVA
+anova(mlr1_alt,mlr1)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: y ~ x1 + x2 + x4 + I(exp(x2))
+## Model 2: y ~ x1 + x2 + x3 + x4 + I(exp(x2))
+##   Res.Df        RSS Df Sum of Sq      F Pr(&gt;F)
+## 1    116 2.4108e+10                           
+## 2    115 2.4087e+10  1  20977403 0.1002 0.7522</code></pre>
+<p>From the above analysis, since the F-value is small, we cannot reject the null hypothesis, therefore, we remove the predictor variable X<sub>3</sub> from further analysis</p>
 </div>
 </div>
 

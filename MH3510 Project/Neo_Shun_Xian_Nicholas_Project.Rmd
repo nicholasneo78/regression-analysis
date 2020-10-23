@@ -60,7 +60,7 @@ pairs(data,panel=panel.smooth)
 From the plot above, there exist relations between each predictor variables (X1 to X4) and the response variable (y). 
 
 ### Model 1: Additional e^x~2~^ term in the Multi Regression Model
-From the plot above, there seemed to have an exponential relation between the response variable y and predictor variable x~2~. Hence, we fit the data with an additional e^x~2~^ term: $$y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\beta_{3}X_{3}+\beta_{4}X_{4}+\beta_{5}e^{X_{2}}$$
+From the plot above, there seemed to have an exponential relation between the response variable y and predictor variable x~2~. Hence, we fit the data with an additional e^x~2~^ term: $$y=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\beta_{3}X_{3}+\beta_{4}X_{4}+\beta_{5}e^{X_{2}}+\epsilon$$
 
 This will be our suggested model 1.
 
@@ -71,6 +71,14 @@ mlr1 <- lm(y ~ x1+x2+x3+x4+I(exp(x2)), data=data)
 summary(mlr1)
 ```
 
-### Check the adequacy using F-ratio by comparing 2 models
+### Check the adequacy using t-value (standard error) and F-test between 2 models
+From the result of model 1, predictor X~3~ is not significant due to very small t-value. Hence, it's coefficient may be equal to zero i.e $$H_{0}: \beta_{3} = 0$$
 
+```{r model1}
+# F-test between 2 models (full and model without predictor variable X3)
+mlr1_alt <- lm(y ~ x1+x2+x4+I(exp(x2)), data=data)
+# ANOVA
+anova(mlr1_alt,mlr1)
+```
+From the above analysis, since the F-value is small, we cannot reject the null hypothesis, therefore, we remove the predictor variable X~3~ from further analysis
 
