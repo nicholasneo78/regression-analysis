@@ -1,7 +1,7 @@
 ---
 title: "MH3510 Project Report"
 author: "Neo Shun Xian Nicholas"
-date: "25 October 2020"
+date: "27 October 2020"
 output:
   pdf_document: default
   html_document: default
@@ -19,14 +19,14 @@ This data is about traffic monitoring. One of the most important traffic monitor
 y: Average annual daily traffic 
   
 **Predictor Variable:**  
-X1: Population of country in which road section is located  
-X2: Number of lanes in road section   
-X3: Width of the road section (in feet)  
-X4: Two-category quality variable indicating whether or not there is control of access to road section (1=access control, 2=no access control)  
-**Can define X4 to be 1 if there is access control and 0 if no control**  
+X~1~: Population of country in which road section is located  
+X~2~: Number of lanes in road section   
+X~3~: Width of the road section (in feet)  
+X~4~: Two-category quality variable indicating whether or not there is control of access to road section (1=access control, 2=no access control)  
+**Can define X~4~ to be 1 if there is access control and 0 if no control**  
   
-*Numerical predictor variable:* X1, X2, X3    
-*Categorical predictor varable:* X4  
+*Numerical predictor variable:* X~1~, X~2~, X~3~    
+*Categorical predictor varable:* X~4~  
 
 ## Importing the dataset
 ```{r readData}
@@ -93,6 +93,7 @@ qqline(residuals(mlr1_alt))
   
 From the QQ plot above, we can see that the residuals are not normally distributed. We will now draw some plots of the residuals against each predictor variable, X~1~, X~2~, X~4~  
 ```{r model1_resPlot}
+# draw some plots of the residuals against each predictor variable
 par(mfrow=c(1,4))
 plot(fitted(mlr1_alt), residuals(mlr1_alt), ylab='Residuals', xlab='Fitted values')
 plot(data$x1, residuals(mlr1_alt), ylab='Residuals', xlab='X1')
